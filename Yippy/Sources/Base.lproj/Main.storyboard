@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -785,7 +786,6 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <size key="minSize" width="440" height="290"/>
                                             <size key="maxSize" width="480" height="10000000"/>
-                                            <color key="insertionPointColor" name="textInsertionPointColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
                                     </subviews>
                                 </clipView>
@@ -823,53 +823,51 @@
             <objects>
                 <viewController id="0ll-QT-yOq" customClass="AboutViewController" customModule="Yippy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="I7W-mi-knt">
-                        <rect key="frame" x="0.0" y="0.0" width="439" height="326"/>
+                        <rect key="frame" x="0.0" y="0.0" width="439" height="340"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5ss-UM-7az">
-                                <rect key="frame" x="164" y="195" width="111" height="111"/>
+                                <rect key="frame" x="164" y="209" width="111" height="111"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="111" id="gC7-e8-lwS"/>
                                     <constraint firstAttribute="height" constant="111" id="uKr-B3-ptu"/>
                                 </constraints>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="YippyIconColored" id="fDg-n1-Z9J"/>
                             </imageView>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="NdS-xO-VUL">
-                                <rect key="frame" x="187" y="158" width="65" height="29"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="NdS-xO-VUL">
+                                <rect key="frame" x="187" y="172" width="65" height="29"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Yippy" id="Z6b-cD-Bpq">
                                     <font key="font" metaFont="system" size="25"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oEK-pg-YYN">
-                                <rect key="frame" x="173" y="131" width="93" height="19"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" title="Version 1.0.1" id="Xnq-Kb-aEf">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oEK-pg-YYN">
+                                <rect key="frame" x="171" y="145" width="98" height="19"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Version 2.0.0" id="Xnq-Kb-aEf">
                                     <font key="font" metaFont="system" size="16"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="9OQ-Ol-gxT">
-                                <rect key="frame" x="20" y="20" width="399" height="103"/>
+                            <scrollView misplaced="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="9OQ-Ol-gxT">
+                                <rect key="frame" x="20" y="40" width="399" height="75"/>
                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BCJ-dP-P7S">
-                                    <rect key="frame" x="0.0" y="0.0" width="399" height="103"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="399" height="75"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" linkDetection="YES" spellingCorrection="YES" smartInsertDelete="YES" id="DEF-3O-Hu2">
-                                            <rect key="frame" x="0.0" y="0.0" width="399" height="103"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="399" height="75"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            <size key="minSize" width="399" height="103"/>
+                                            <size key="minSize" width="399" height="75"/>
                                             <size key="maxSize" width="399" height="10000000"/>
                                             <attributedString key="textStorage">
                                                 <fragment>
-                                                    <string key="content">Written and maintained by Matthew Davidson. Icons by David Waters.
+                                                    <string key="content">New maintiner: Iman Mahmoudinasab
 
-Source code available at: https://github.com/mattDavo/Yippy
-
-Website: https://yippy.mattdavo.com</string>
+Written by Matthew Davidson. Icons by David Waters.</string>
                                                     <attributes>
                                                         <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                         <font key="NSFont" metaFont="system"/>
@@ -912,7 +910,7 @@ Website: https://yippy.mattdavo.com</string>
                 </viewController>
                 <customObject id="Wq5-hD-YXi" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="54.5" y="1539"/>
+            <point key="canvasLocation" x="54.5" y="1546"/>
         </scene>
         <!--Welcome View Controller-->
         <scene sceneID="Dfg-P8-zsR">
@@ -930,7 +928,7 @@ Website: https://yippy.mattdavo.com</string>
                                 </constraints>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="YippyIconColored" id="bDP-tq-SYF"/>
                             </imageView>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0bn-y0-I1O">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0bn-y0-I1O">
                                 <rect key="frame" x="18" y="90" width="414" height="24"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Thank you for downloading Yippy!" id="J8m-Ct-kEv">
                                     <font key="font" metaFont="system" size="20"/>
@@ -938,7 +936,7 @@ Website: https://yippy.mattdavo.com</string>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ili-Q1-k3U">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ili-Q1-k3U">
                                 <rect key="frame" x="18" y="50" width="414" height="32"/>
                                 <textFieldCell key="cell" alignment="center" title="For Yippy to be able to paste into your applications it requires you to provide it with full control to your computer." id="YWR-Ur-mdX">
                                     <font key="font" metaFont="system"/>
@@ -1029,7 +1027,7 @@ Website: https://yippy.mattdavo.com</string>
                         <rect key="frame" x="0.0" y="0.0" width="457" height="252"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="US1-sf-gtU">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="US1-sf-gtU">
                                 <rect key="frame" x="120" y="84" width="217" height="29"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Waiting for control..." id="rqa-v5-s1A">
                                     <font key="font" metaFont="system" size="25"/>
@@ -1039,7 +1037,7 @@ Website: https://yippy.mattdavo.com</string>
                                 </textFieldCell>
                                 <accessibility identifier="waitingForControlLabel"/>
                             </textField>
-                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="eYw-Dd-YQZ">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="eYw-Dd-YQZ">
                                 <rect key="frame" x="18" y="60" width="421" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="417" id="IoB-HR-7l5"/>
@@ -1095,7 +1093,7 @@ Website: https://yippy.mattdavo.com</string>
                         <rect key="frame" x="0.0" y="0.0" width="568" height="468"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GQS-f3-cdi">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GQS-f3-cdi">
                                 <rect key="frame" x="189" y="300" width="191" height="29"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="How to use Yippy" id="tsE-FG-dCI">
                                     <font key="font" metaFont="system" size="25"/>
@@ -1105,7 +1103,7 @@ Website: https://yippy.mattdavo.com</string>
                                 </textFieldCell>
                                 <accessibility identifier="howToUseLabel"/>
                             </textField>
-                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="m4h-rn-US5">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="m4h-rn-US5">
                                 <rect key="frame" x="18" y="20" width="532" height="272"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="528" id="Xw5-Hm-4Os"/>
@@ -1171,7 +1169,7 @@ The default position for the Yippy is to float on the right edge of the screen, 
                         <rect key="frame" x="0.0" y="0.0" width="429" height="257"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nLI-vg-om4">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nLI-vg-om4">
                                 <rect key="frame" x="18" y="221" width="393" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Hold down the keys you would like to use for the hot key." id="sEB-ft-Hiw">
                                     <font key="font" usesAppearanceFont="YES"/>
@@ -1179,7 +1177,7 @@ The default position for the Yippy is to float on the right edge of the screen, 
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rNB-pp-tM7">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rNB-pp-tM7">
                                 <rect key="frame" x="18" y="104" width="393" height="67"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="67" id="S2H-aB-I8N"/>
@@ -1277,7 +1275,7 @@ The default position for the Yippy is to float on the right edge of the screen, 
                         <rect key="frame" x="0.0" y="0.0" width="429" height="297"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ey7-Xm-tk8">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ey7-Xm-tk8">
                                 <rect key="frame" x="18" y="261" width="208" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Maximum number of items saved:" id="XNv-eZ-nFH">
                                     <font key="font" usesAppearanceFont="YES"/>
@@ -1285,7 +1283,7 @@ The default position for the Yippy is to float on the right edge of the screen, 
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pEh-ph-rnW">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pEh-ph-rnW">
                                 <rect key="frame" x="165" y="226" width="61" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Rich text:" id="Git-BT-vhA">
                                     <font key="font" usesAppearanceFont="YES"/>
@@ -1311,7 +1309,7 @@ The default position for the Yippy is to float on the right edge of the screen, 
                                 <rect key="frame" x="229" y="255" width="119" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="fxc-JU-bFw" id="I0k-qn-2Wt">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="O4b-zy-xzF">
                                         <items>
                                             <menuItem title="Item 1" state="on" id="fxc-JU-bFw"/>

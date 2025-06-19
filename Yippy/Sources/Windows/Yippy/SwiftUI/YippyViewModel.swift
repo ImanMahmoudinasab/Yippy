@@ -254,19 +254,16 @@ class YippyViewModel {
     }
     
     func runSearch() {
-        searchEngine.search(query: self.searchBarValue, completion: { result in
-            if (result.query.query.isEmpty) {
-                self.results.accept(Results(items: State.main.history.items, isSearchResult: false))
-                return
+        if (self.searchBarValue.isEmpty) {
+            self.results.accept(Results(items: State.main.history.items, isSearchResult: false))
+            return
+        }
+        self.results.accept(Results(items: State.main.history.items.filter({ HistoryItem in
+            if let urlString = HistoryItem.getPlainString() {
+                return urlString.lowercased().contains(self.searchBarValue.lowercased())
             }
-            
-            var filteredData = [HistoryItem]()
-            for i in result.results {
-                filteredData.append(State.main.history.items[i])
-            }
-            
-            self.results.accept(Results(items: filteredData, isSearchResult: true))
-        })
+            return false
+        }), isSearchResult: true))
     }
     
     private func incrementSelected() {
