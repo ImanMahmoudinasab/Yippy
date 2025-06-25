@@ -19,6 +19,10 @@ class SUIYippyViewController: NSHostingController<YippyView> {
     }
 }
 
+#Preview {
+    YippyView()
+}
+
 struct YippyView: View {
     
     enum Focus {
@@ -27,35 +31,54 @@ struct YippyView: View {
     
     @Bindable var viewModel = YippyViewModel()
     @FocusState private var focusState: Focus?
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 4) {
-                ZStack {
+                HStack {
                     Text("Yippy")
                         .font(.title)
-                    
-                    HStack {
-                        Spacer()
-                        
-                        Text(viewModel.itemCountLabel)
-                            .font(.subheadline)
+                    Spacer()
+                    Button {
+                    } label: {
+                        Image(systemName: "photo")
                     }
-                }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 8)
+                    .buttonStyle(.borderless)
+                    Button {
+                    } label: {
+                        Image(systemName: "document.fill")
+                    }
+                    .buttonStyle(.borderless)
+                    Button {
+                    } label: {
+                        Image(systemName: "text.page")
+                    }
+                    .buttonStyle(.borderless)
+                    Button {
+                        viewModel.filterBookmarks()
+                    } label: {
+                        Image(systemName: "bookmark.fill")
+                            .foregroundColor(viewModel.showBookmarks ? .accentColor : .gray )
+                    }
+                    .buttonStyle(.borderless)
+                }.padding(.horizontal, 24)
                 
-                TextField(text: $viewModel.searchBarValue, prompt: Text("Search For Something (􀆔\\)")) {
+                HStack{
                     Image(systemName: "magnifyingglass")
-                }
-                .focused($focusState, equals: .searchbar)
-                .autocorrectionDisabled()
-                .border(.secondary)
-                .onChange(of: viewModel.searchBarValue) { _, _ in
-                    viewModel.runSearch()
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+                    TextField(text: $viewModel.searchBarValue, prompt: Text("Search For Something...")) {
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 8)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .focused($focusState, equals: .searchbar)
+                    .autocorrectionDisabled()
+                    .onChange(of: viewModel.searchBarValue) { _, _ in
+                        viewModel.runSearch()
+                    }
+                    Text(viewModel.itemCountLabel)
+                        .font(.subheadline)
+                }.padding(.horizontal, 24)
                 
                 YippyHistoryTableView(viewModel: viewModel)
                     .onAppear(perform: viewModel.onAppear)
@@ -80,7 +103,7 @@ struct YippyHistoryTableView: View {
     var body: some View {
         GeometryReader { proxy in
             ScrollViewReader { reader in
-                ScrollView(viewModel.panelPosition) {
+                ScrollView(viewModel.panelPosition, showsIndicators: false) {
                     if viewModel.panelPosition == .horizontal {
                         LazyHStack(spacing: 12) {
                             content(proxy: proxy)
@@ -106,37 +129,65 @@ struct YippyHistoryTableView: View {
         ForEach(Array(viewModel.yippyHistory.items.enumerated()), id: \.element) { (index, item) in
             HistoryCellView(item: item, proxy: proxy, usingItemRtf: viewModel.isRichText)
                 .clipShape(
-                    RoundedRectangle(cornerRadius: 7)
+                    RoundedRectangle(cornerRadius: 4)
                 )
                 .background(
-                    RoundedRectangle(cornerRadius: 7)
-                        .fill(Color(NSColor.windowBackgroundColor))
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color(NSColor.textBackgroundColor))
                 )
                 .overlay {
                     ZStack(alignment: .topLeading) {
+                        if viewModel.selectedItem == item {
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.accentColor, lineWidth: 2, )
+                        }
                         if index < 10 {
                             VStack {
                                 HStack {
-                                    Spacer()
-                                    
-                                    Text("􀆔 + \(index)")
-                                        .font(.system(size: 10))
-                                        .padding(.all, 4)
-                                        .foregroundStyle(Color.white)
+                                    Text("\(index)")
+                                        .font(.system(size: 8))
+                                        .frame(width: 8, height: 12, alignment: .center)
+                                        .padding(EdgeInsets(top: 1, leading: 1, bottom: 1, trailing: 1))
+                                        .foregroundStyle(Color(NSColor.textBackgroundColor))
                                         .background(
-                                            RoundedRectangle(cornerRadius: 6)
-                                                .fill(Color.accentColor)
+                                            UnevenRoundedRectangle(cornerRadii: .init(
+                                                topLeading: 4,
+                                                bottomLeading: 0,
+                                                bottomTrailing: 4,
+                                                topTrailing: 0),
+                                                                   style: .continuous)
+                                            .fill(viewModel.selectedItem == item ? Color.accentColor : Color.secondary)
                                         )
+                                        .offset(x: 0, y: -5)
+                                        Spacer()
+                                        Button {
+                                            viewModel.toggleBookmark(at: index)
+                                        } label: {
+                                            Image(systemName: item.bookmarked ? "bookmark.fill" : "bookmark")
+                                        }
+                                        .buttonStyle(.borderless)
+                                        .foregroundColor(item.bookmarked ? .accentColor : .gray )
+                                        .padding(4)
                                 }
-                                
+                                Spacer()
+                            }
+                        } else{
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Button {
+                                        viewModel.toggleBookmark(at: index)
+                                    } label: {
+                                        Image(systemName: item.bookmarked ? "bookmark.fill" : "bookmark")
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .foregroundColor(item.bookmarked ? .accentColor : .gray )
+                                    .padding(4)
+                                }
                                 Spacer()
                             }
                         }
-                        
-                        if viewModel.selectedItem == item {
-                            RoundedRectangle(cornerRadius: 7)
-                                .stroke(Color.accentColor, lineWidth: 6)
-                        }
+                       
                     }
                 }
                 .onTapGesture {

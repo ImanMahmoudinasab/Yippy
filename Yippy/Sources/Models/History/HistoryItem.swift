@@ -48,6 +48,8 @@ class HistoryItem: NSObject, Identifiable {
         return cache.isItemRegistered(fsId)
     }
     
+    var bookmarked: Bool
+    
     static let historyItemIdType = NSPasteboard.PasteboardType(rawValue: "MatthewDavidson.Yippy.historyItemId")
     
     /// Static definition of whether the history items should write RTF data to the pasteboard.
@@ -64,11 +66,12 @@ class HistoryItem: NSObject, Identifiable {
     ///
     /// - Parameter unsavedData: Pastebaord data that has not yet been saved to disk.
     /// - Parameter cache: `HistoryCache` to use for caching if this item starts using caching.
-    init(unsavedData: [NSPasteboard.PasteboardType: Data], cache: HistoryCache) {
+    init(unsavedData: [NSPasteboard.PasteboardType: Data], cache: HistoryCache, bookmarked: Bool) {
         self._unsavedData = unsavedData
         self.types = unsavedData.keys.map({$0})
         self.cache = cache
         self.fsId = UUID()
+        self.bookmarked = bookmarked
     }
     
     /// Creates a `HistoryItem` for an item that is saved to disk.
@@ -76,12 +79,13 @@ class HistoryItem: NSObject, Identifiable {
     /// - Parameter fsId: The unique id of the item.
     /// - Parameter types: The types of pasteboard data that this item contains.
     /// - Parameter cache: `HistoryCache` to use for caching.
-    init(fsId: UUID, types: [NSPasteboard.PasteboardType], cache: HistoryCache) {
+    init(fsId: UUID, types: [NSPasteboard.PasteboardType], cache: HistoryCache, bookmarked: Bool) {
         self.fsId = fsId
         self._unsavedData = nil
         self.types = types
         self.cache = cache
         self.cache.registerItem(withId: fsId)
+        self.bookmarked = bookmarked
     }
     
     
@@ -213,6 +217,10 @@ class HistoryItem: NSObject, Identifiable {
         pasteboard.declareTypes([.color], owner: nil)
         pasteboard.setData(data, forType: .color)
         return NSColor(from: pasteboard)
+    }
+    
+    func toggleBookmark() {
+        bookmarked = !bookmarked
     }
     
     private func isStringLink(string: String) -> Bool {

@@ -14,6 +14,7 @@ class HistoryFileManager {
     
     var fileManager: FileManager
     var orderManager: ArrayFileManager
+    var bookmarksManager: ArrayFileManager
     var dataFileManager: DataFileManager
     var dispatchQueue: DispatchQueue
     var errorLogger: ErrorLogger
@@ -25,6 +26,7 @@ class HistoryFileManager {
     init(
         fileManager: FileManager = FileManager.default,
         orderManager: ArrayFileManager = ArrayFileManager(url: Constants.urls.historyOrder),
+        bookmarksManager: ArrayFileManager = ArrayFileManager(url: Constants.urls.bookmarks),
         dataFileManager: DataFileManager = DataFileManager(),
         dispatchQueue: DispatchQueue? = nil,
         errorLogger: ErrorLogger = .general,
@@ -33,6 +35,7 @@ class HistoryFileManager {
     ) {
         self.fileManager = fileManager
         self.orderManager = orderManager
+        self.bookmarksManager = bookmarksManager
         self.dataFileManager = dataFileManager
         self.errorLogger = errorLogger
         self.warningLogger = warningLogger
@@ -47,6 +50,48 @@ class HistoryFileManager {
         if let handler = handler {
             handler(val)
         }
+    }
+    
+    private func writeBookmarks(history: [HistoryItem]) -> Bool {
+        do {
+            try checkHistoryDirectory()
+            try self.bookmarksManager.write(history.filter({ HistoryItem in
+                return HistoryItem.bookmarked
+            }).map({$0.fsId.uuidString}) as NSArray)
+            return true
+        }
+        catch {
+            let historyError = YippyError(localizedDescription: "Failed to write bookmarks due to error: \(error.localizedDescription)")
+            historyError.log(with: self.errorLogger)
+            historyError.show(with: self.alerter)
+            return false
+        }
+    }
+
+    func saveBookmarks(history: [HistoryItem], completionHandler: ((Bool) -> Void)? = nil) {
+        dispatchQueue.async {
+            let res = self.writeBookmarks(history: history)
+            if let c = completionHandler {
+                c(res)
+            }
+        }
+    }
+
+    func loadBookmarks() -> [UUID]? {
+        guard let order = bookmarksManager.read() as? [String] else {
+            YippyWarning(localizedDescription: "Failed to load the bookmarks.").log(with: warningLogger)
+            return nil
+        }
+        var uuidOrder = [UUID]()
+        for str in order {
+            if let id = UUID(uuidString: str) {
+                uuidOrder.append(id)
+            }
+            else {
+                YippyWarning(localizedDescription: "Found string '\(str)' in bookmarks, which is not of the expected UUID format.").log(with: warningLogger)
+            }
+        }
+        return uuidOrder
     }
     
     private func writeHistoryOrder(history: [HistoryItem]) -> Bool {
@@ -121,6 +166,12 @@ class HistoryFileManager {
             saveHistoryOrder(history: [])
             return History(cache: cache, items: [])
         }
+        var bookmarks = loadBookmarks();
+        if bookmarks == nil {
+            YippyWarning(localizedDescription: "Failed to retrieve bookmarks. Creating new bookmarks...").log(with: warningLogger)
+            saveBookmarks(history: [])
+            bookmarks = loadBookmarks()
+        }
         var items = [UUID: HistoryItem]()
         var contents = [URL]()
         
@@ -129,6 +180,7 @@ class HistoryFileManager {
             contents = try self.fileManager.contentsOfDirectory(at: Constants.urls.history, includingPropertiesForKeys: nil)
             // Remove the history order
             contents.removeAll(where: {$0 == Constants.urls.historyOrder})
+            contents.removeAll(where: {$0 == Constants.urls.bookmarks})
             contents.removeAll(where: {$0.lastPathComponent == ".DS_Store"})
         }
         catch {
@@ -149,7 +201,8 @@ class HistoryFileManager {
                     let dataUrls = try self.fileManager.contentsOfDirectory(at: content, includingPropertiesForKeys: nil)
                     // and create the types
                     let types = dataUrls.map({NSPasteboard.PasteboardType($0.lastPathComponent)})
-                    items[id] = HistoryItem(fsId: id, types: types, cache: cache)
+                    let bookmarked: Bool = bookmarks!.contains(id)
+                    items[id] = HistoryItem(fsId: id, types: types, cache: cache, bookmarked: bookmarked)
                 }
                 catch {
                     let historyError = YippyError(code: 0, userInfo: [
@@ -259,6 +312,7 @@ class HistoryFileManager {
             // Delete the folder
             do {
                 try self.fileManager.removeItem(at: self.getUrl(forItemWithId: deleted.fsId))
+                // TODO: remove it from bookmarks list
             }
             catch {
                 let historyError = YippyError(code: 0, userInfo: [

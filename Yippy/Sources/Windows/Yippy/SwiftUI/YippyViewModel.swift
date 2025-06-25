@@ -25,6 +25,7 @@ class YippyViewModel {
     var searchBarValue: String = ""
     var itemCountLabel: String = ""
     var isSearchBarFocused: Bool = false
+    var showBookmarks: Bool = false
     
     var yippyHistory = YippyHistory(history: State.main.history, items: [])
     
@@ -204,6 +205,9 @@ class YippyViewModel {
     func pasteSelected() {
         if let selected = self.selected.value {
             paste(selected: selected)
+            isSearchBarFocused = false
+            searchBarValue = ""
+            isSearchBarFocused = true
         }
     }
     
@@ -219,6 +223,15 @@ class YippyViewModel {
     
     func delete(at index: Int) {
         self.selected.accept(yippyHistory.delete(selected: index))
+    }
+    
+    func filterBookmarks() {
+        self.showBookmarks.toggle()
+        self.runSearch()
+    }
+    
+    func toggleBookmark(at index: Int) {
+        yippyHistory.toggleBookmark(selected: index)
     }
     
     func onSelectItem(at index: Int) {
@@ -240,6 +253,7 @@ class YippyViewModel {
         if let selected = self.selected.value {
             isPreviewShowing = !isPreviewShowing
             if isPreviewShowing {
+                // TODO: "selected" sometimes is out of index and crashes the app
                 State.main.previewHistoryItem.accept(yippyHistory.items[selected])
             }
             else {
@@ -255,12 +269,25 @@ class YippyViewModel {
     
     func runSearch() {
         if (self.searchBarValue.isEmpty) {
-            self.results.accept(Results(items: State.main.history.items, isSearchResult: false))
+            if self.showBookmarks {
+                self.results.accept(Results(items: State.main.history.items.filter({ HistoryItem in
+                    return HistoryItem.bookmarked
+                }), isSearchResult: false))
+            } else {
+                self.results.accept(Results(items: State.main.history.items, isSearchResult: false))
+            }
             return
         }
         self.results.accept(Results(items: State.main.history.items.filter({ HistoryItem in
-            if let urlString = HistoryItem.getPlainString() {
-                return urlString.lowercased().contains(self.searchBarValue.lowercased())
+            if self.showBookmarks {
+                if let urlString = HistoryItem.getPlainString() {
+                    return urlString.lowercased().contains(self.searchBarValue.lowercased()) && HistoryItem.bookmarked
+                }
+            }
+            if !self.showBookmarks {
+                if let urlString = HistoryItem.getPlainString() {
+                    return urlString.lowercased().contains(self.searchBarValue.lowercased())
+                }
             }
             return false
         }), isSearchResult: true))

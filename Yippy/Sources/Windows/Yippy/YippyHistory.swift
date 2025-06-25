@@ -80,6 +80,11 @@ class YippyHistory {
         }
         return select
     }
+
+    func toggleBookmark(selected: Int) {
+        history.toggleBookmark(at: selected)
+    }
+    
     
     func move(from: Int, to: Int) {
         history.moveItem(at: from, to: to)

@@ -39,7 +39,7 @@ class YippyWindowController: NSWindowController {
                 [] in
                 if !$0 {
                     self.close()
-                    self.oldApp?.activate(options: .activateIgnoringOtherApps)
+                    self.oldApp?.activate()
                 }
                 else {
                     self.oldApp = NSWorkspace.shared.frontmostApplication

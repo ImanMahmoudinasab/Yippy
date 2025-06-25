@@ -51,6 +51,7 @@ class History {
     enum Change {
         case initial
         case insert(index: Int)
+        case toggleBookmark(index: Int)
         case delete(deletedItem: HistoryItem)
         case clear
         case move(from: Int, to: Int)
@@ -129,6 +130,12 @@ class History {
         historyFM.moveItem(newHistory: _items, from: i, to: j)
     }
     
+    func toggleBookmark(at i: Int) {
+        _items[i].toggleBookmark()
+        subscribers.forEach({$0(_items, Change.toggleBookmark(index: i))})
+        historyFM.saveBookmarks(history:_items)
+    }
+    
     func recordPasteboardChange(withCount changeCount: Int) {
         _lastRecordedChangeCount.accept(changeCount)
     }
@@ -184,7 +191,7 @@ extension History: PasteboardMonitorDelegate {
                     }
                 }
                 if !data.isEmpty {
-                    let historyItem = HistoryItem(unsavedData: data, cache: cache)
+                    let historyItem = HistoryItem(unsavedData: data, cache: cache, bookmarked: false)
                     insertItem(historyItem, at: 0)
                 }
             }
