@@ -74,7 +74,7 @@ struct YippyView: View {
                     .focused($focusState, equals: .searchbar)
                     .autocorrectionDisabled()
                     .onChange(of: viewModel.searchBarValue) { _, _ in
-                        viewModel.runSearch()
+                        viewModel.onSearchBarValueChange()
                     }
                     Text(viewModel.itemCountLabel)
                         .font(.subheadline)
@@ -161,7 +161,7 @@ struct YippyHistoryTableView: View {
                                         .offset(x: 0, y: -5)
                                         Spacer()
                                         Button {
-                                            viewModel.toggleBookmark(at: index)
+                                            viewModel.toggleBookmark(id: item.id)
                                         } label: {
                                             Image(systemName: item.bookmarked ? "bookmark.fill" : "bookmark")
                                         }
@@ -176,7 +176,7 @@ struct YippyHistoryTableView: View {
                                 HStack {
                                     Spacer()
                                     Button {
-                                        viewModel.toggleBookmark(at: index)
+                                        viewModel.toggleBookmark(id: item.id)
                                     } label: {
                                         Image(systemName: item.bookmarked ? "bookmark.fill" : "bookmark")
                                     }

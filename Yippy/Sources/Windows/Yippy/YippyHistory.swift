@@ -81,8 +81,8 @@ class YippyHistory {
         return select
     }
 
-    func toggleBookmark(selected: Int) {
-        history.toggleBookmark(at: selected)
+    func toggleBookmark(selected id: UUID) {
+        history.toggleBookmark(id: id)
     }
     
     

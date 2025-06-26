@@ -51,7 +51,7 @@ class History {
     enum Change {
         case initial
         case insert(index: Int)
-        case toggleBookmark(index: Int)
+        case toggleBookmark(id: UUID)
         case delete(deletedItem: HistoryItem)
         case clear
         case move(from: Int, to: Int)
@@ -130,9 +130,11 @@ class History {
         historyFM.moveItem(newHistory: _items, from: i, to: j)
     }
     
-    func toggleBookmark(at i: Int) {
-        _items[i].toggleBookmark()
-        subscribers.forEach({$0(_items, Change.toggleBookmark(index: i))})
+    func toggleBookmark(id: UUID) {
+        _items.first(where: { HistoryItem in
+            HistoryItem.id == id
+        })!.toggleBookmark()
+        subscribers.forEach({$0(_items, Change.toggleBookmark(id: id))})
         historyFM.saveBookmarks(history:_items)
     }
     

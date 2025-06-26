@@ -129,8 +129,20 @@ class YippyViewModel {
     
     func onHistoryChange(_ history: [HistoryItem], change: History.Change) {
         updateSearchEngine(items: history)
+        switch change {
+        case .toggleBookmark:
+            if self.showBookmarks {
+                runSearch()
+                resetSelected()
+                return;
+            }
+            break;
+        default: break;
+        }
+
         if !searchBarValue.isEmpty {
             runSearch()
+            resetSelected()
         }
         else {
             results.accept(Results(items: history, isSearchResult: false))
@@ -154,6 +166,11 @@ class YippyViewModel {
         default:
             panelPosition = .vertical
         }
+    }
+    
+    func onSearchBarValueChange() {
+        runSearch()
+        resetSelected()
     }
     
     func updateSearchEngine(items: [HistoryItem]) {
@@ -230,8 +247,8 @@ class YippyViewModel {
         self.runSearch()
     }
     
-    func toggleBookmark(at index: Int) {
-        yippyHistory.toggleBookmark(selected: index)
+    func toggleBookmark(id: UUID) {
+        yippyHistory.toggleBookmark(selected: id)
     }
     
     func onSelectItem(at index: Int) {
