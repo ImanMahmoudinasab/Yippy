@@ -170,7 +170,7 @@ class HistoryFileManager {
         if bookmarks == nil {
             YippyWarning(localizedDescription: "Failed to retrieve bookmarks. Creating new bookmarks...").log(with: warningLogger)
             saveBookmarks(history: [])
-            bookmarks = loadBookmarks()
+            bookmarks = []
         }
         var items = [UUID: HistoryItem]()
         var contents = [URL]()

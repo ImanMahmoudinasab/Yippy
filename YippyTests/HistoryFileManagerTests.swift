@@ -27,13 +27,13 @@ class HistoryFileManagerTests: XCTestCase {
     var alerter: AlerterMock!
     
     let history1: [HistoryItem] = [
-        HistoryItem(fsId: UUID(), types: [], cache: HistoryCache())
+        HistoryItem(fsId: UUID(), types: [], cache: HistoryCache(), bookmarked: false)
     ]
     
     let history2: [HistoryItem] = [
-        HistoryItem(fsId: UUID(), types: [.string], cache: HistoryCache()),
-        HistoryItem(fsId: UUID(), types: [.string], cache: HistoryCache()),
-        HistoryItem(fsId: UUID(), types: [.string], cache: HistoryCache())
+        HistoryItem(fsId: UUID(), types: [.string], cache: HistoryCache(), bookmarked: false),
+        HistoryItem(fsId: UUID(), types: [.string], cache: HistoryCache(), bookmarked: false),
+        HistoryItem(fsId: UUID(), types: [.string], cache: HistoryCache(), bookmarked: false)
     ]
     
     var cache = HistoryCache()
@@ -308,7 +308,7 @@ class HistoryFileManagerTests: XCTestCase {
         // 1. Setup mock to fail with one of the items
         orderManager.order = history2.map({$0.fsId.uuidString}) as NSArray
         orderManager.shouldReadSucceed = true
-        let storedHistory = history2.with(element: HistoryItem(fsId: UUID(), types: [], cache: cache), insertedAt: 3)
+        let storedHistory = history2.with(element: HistoryItem(fsId: UUID(), types: [], cache: cache, bookmarked: false), insertedAt: 3)
         let contents = storedHistory.map({historyFM.getUrl(forItemWithId: $0.fsId)})
         fileManager.directoryContents[Constants.urls.history] = contents
         // Make no items fail
@@ -371,7 +371,7 @@ class HistoryFileManagerTests: XCTestCase {
     // MARK: - insertItem()
     func testInsertItemWhenUnsavedDataNil() {
         // 1. Setup item
-        let item = HistoryItem(fsId: UUID(), types: [.string], cache: cache)
+        let item = HistoryItem(fsId: UUID(), types: [.string], cache: cache, bookmarked: false)
         // Expect 1 error:
         let err = expectation(description: "Error logged")
         let alert = expectation(description: "Error shown")
@@ -404,7 +404,7 @@ class HistoryFileManagerTests: XCTestCase {
     
     func testInsertItemWhenFailsToWriteData() {
         let history = [
-            HistoryItem(unsavedData: [.string: "Test".data(using: .utf8)!], cache: cache)
+            HistoryItem(unsavedData: [.string: "Test".data(using: .utf8)!], cache: cache, bookmarked: false)
         ]
         // 1. Setup to succeed creating a directory but fail data write
         fileManager.createDirectory[historyFM.getUrl(forItemWithId: history[0].fsId)] = true
@@ -425,7 +425,7 @@ class HistoryFileManagerTests: XCTestCase {
     
     func testInsertItemSuccessful() {
         let history = [
-            HistoryItem(unsavedData: [.string: "Test".data(using: .utf8)!], cache: cache)
+            HistoryItem(unsavedData: [.string: "Test".data(using: .utf8)!], cache: cache, bookmarked: false)
         ]
         // 1. Setup to succeed creating a directory but fail data write
         fileManager.createDirectory[historyFM.getUrl(forItemWithId: history[0].fsId)] = true
@@ -451,7 +451,7 @@ class HistoryFileManagerTests: XCTestCase {
     // MARK: - deleteItem()
     func testDeleteItemWhenDeleteFolderFails() {
         // 1. Setup the mock to fail
-        let deleted = HistoryItem(fsId: UUID(), types: [], cache: cache)
+        let deleted = HistoryItem(fsId: UUID(), types: [], cache: cache, bookmarked: false)
         fileManager.removeItem[historyFM.getUrl(forItemWithId: deleted.fsId)] = false
         // Expect 1 error
         let err = expectation(description: "Error logged")
@@ -473,7 +473,7 @@ class HistoryFileManagerTests: XCTestCase {
     
     func testDeleteItemSuccess() {
         // 1. Setup the mock to succeed
-        let deleted = HistoryItem(fsId: UUID(), types: [], cache: cache)
+        let deleted = HistoryItem(fsId: UUID(), types: [], cache: cache, bookmarked: false)
         fileManager.removeItem[historyFM.getUrl(forItemWithId: deleted.fsId)] = true
         // Expect success
         let success = expectation(description: "Succeeds")
