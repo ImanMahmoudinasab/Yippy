@@ -129,6 +129,8 @@ class YippyViewModel {
     
     func onHistoryChange(_ history: [HistoryItem], change: History.Change) {
         updateSearchEngine(items: history)
+        self.scrollToSelectedItem = UUID()
+        
         switch change {
         case .toggleBookmark:
             if self.showBookmarks {

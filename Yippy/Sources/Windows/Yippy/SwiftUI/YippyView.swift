@@ -115,9 +115,9 @@ struct YippyHistoryTableView: View {
                         }
                     }
                 }
-                .onChange(of: viewModel.selectedItem) { oldValue, newValue in
-                    if let value = newValue {
-                        reader.scrollTo(value)
+                .onChange(of: viewModel.scrollToSelectedItem) { oldValue, newValue in
+                    if let selectedItem = viewModel.selectedItem {
+                        reader.scrollTo(selectedItem)
                     }
                 }
             }
