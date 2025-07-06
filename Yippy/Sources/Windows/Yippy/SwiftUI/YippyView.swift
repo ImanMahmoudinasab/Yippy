@@ -109,9 +109,10 @@ struct YippyHistoryTableView: View {
                             content(proxy: proxy)
                         }
                     } else {
-                        LazyVStack(spacing: 4) {
+                        LazyVStack(spacing: 0) {
                             content(proxy: proxy)
-                                .padding(.top, 8)
+                                .padding(.top, 4)
+                                .padding(.bottom, 8)
                         }
                     }
                 }
