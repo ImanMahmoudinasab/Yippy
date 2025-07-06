@@ -130,10 +130,13 @@ class YippyViewModel {
         }
     }
     
+    func scrollToSelected() {
+        self.scrollToSelectedItem = UUID()
+    }
+    
     func onHistoryChange(_ history: [HistoryItem], change: History.Change) {
         updateSearchEngine(items: history)
-        self.scrollToSelectedItem = UUID()
-        
+        scrollToSelected()
         switch change {
         case .toggleBookmark:
             if self.showBookmarks {
@@ -222,10 +225,12 @@ class YippyViewModel {
     
     func goToNextItem() {
         incrementSelected()
+        scrollToSelected()
     }
     
     func goToPreviousItem() {
         decrementSelected()
+        scrollToSelected()
     }
     
     func pasteSelected() {
@@ -268,6 +273,7 @@ class YippyViewModel {
     
     func onSelectItem(at index: Int) {
         self.selected.accept(index)
+        scrollToSelected()
     }
     
     func close() {
