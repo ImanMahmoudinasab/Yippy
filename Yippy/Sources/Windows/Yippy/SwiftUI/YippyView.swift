@@ -56,7 +56,7 @@ struct YippyView: View {
                     }
                     .buttonStyle(.borderless)
                     Button {
-                        viewModel.filterBookmarks()
+                        viewModel.toggleBookmarksFilter()
                     } label: {
                         Image(systemName: "bookmark.fill")
                             .foregroundColor(viewModel.showBookmarks ? .accentColor : .gray )

@@ -41,6 +41,7 @@ class YippyViewModel {
     var isRichText = Settings.main.showsRichText
     
     private(set) var selectedItem: HistoryItem?
+    var scrollToSelectedItem: UUID?
     
     private let results = BehaviorRelay(value: Results(items: [], isSearchResult: false))
     private let selected = BehaviorRelay<Int?>(value: nil)
@@ -81,6 +82,8 @@ class YippyViewModel {
         YippyHotKeys.ctrlDelete.onDown(deleteSelected)
         YippyHotKeys.space.onDown(togglePreview)
         YippyHotKeys.cmdBackslash.onDown(focusSearchBar)
+        YippyHotKeys.toggleBookmarksFilter.onDown(self.toggleBookmarksFilter)
+        YippyHotKeys.toggleBookmark.onDown{self.toggleBookmark()}
         
         // Paste hot keys
         YippyHotKeys.cmd0.onDown { self.shortcutPressed(key: 0) }
@@ -248,13 +251,19 @@ class YippyViewModel {
         self.selected.accept(yippyHistory.delete(selected: index))
     }
     
-    func filterBookmarks() {
+    func toggleBookmarksFilter() {
         self.showBookmarks.toggle()
         self.runSearch()
     }
     
-    func toggleBookmark(id: UUID) {
-        yippyHistory.toggleBookmark(selected: id)
+    func toggleBookmark(id: UUID?=nil) {
+        if id == nil && self.selectedItem != nil {
+            yippyHistory.toggleBookmark(selected: self.selectedItem!.fsId)
+            return
+        }
+        if let id = id {
+            yippyHistory.toggleBookmark(selected: id)
+        }
     }
     
     func onSelectItem(at index: Int) {

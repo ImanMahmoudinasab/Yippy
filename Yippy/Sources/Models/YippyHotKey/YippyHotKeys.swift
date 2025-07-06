@@ -11,6 +11,8 @@ import Foundation
 struct YippyHotKeys {
     
     static var toggle = YippyHotKey(key: .v, modifiers: [.command, .shift])
+    static var toggleBookmark = YippyHotKey(key: .b, modifiers: [.control])
+    static var toggleBookmarksFilter = YippyHotKey(key: .b, modifiers: [.command])
     static var `return` = YippyHotKey(key: .return, modifiers: [])
     static var escape = YippyHotKey(key: .escape, modifiers: [])
     static var downArrow = YippyHotKey(key: .downArrow, modifiers: [])
