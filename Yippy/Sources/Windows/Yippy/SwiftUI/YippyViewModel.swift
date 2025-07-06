@@ -139,6 +139,10 @@ class YippyViewModel {
                 return;
             }
             break;
+        case .move:
+            runSearch()
+            resetSelected()
+            return;
         default: break;
         }
 
