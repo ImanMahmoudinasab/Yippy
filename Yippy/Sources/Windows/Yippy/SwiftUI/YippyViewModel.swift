@@ -124,9 +124,11 @@ class YippyViewModel {
     func resetSelected() {
         if yippyHistory.items.count > 0 {
             selected.accept(0)
+            selectedItem = yippyHistory.items[0]
         }
         else {
             selected.accept(nil)
+            selectedItem = nil
         }
     }
     
@@ -246,6 +248,9 @@ class YippyViewModel {
     func deleteSelected() {
         if let selected = self.selected.value {
             self.selected.accept(yippyHistory.delete(selected: selected))
+            if self.selected.value != nil {
+                self.selectedItem = yippyHistory.items[self.selected.value!]
+            }
         }
     }
     
@@ -255,11 +260,16 @@ class YippyViewModel {
     
     func delete(at index: Int) {
         self.selected.accept(yippyHistory.delete(selected: index))
+        if self.selected.value != nil {
+            self.selectedItem = yippyHistory.items[self.selected.value!]
+        }
     }
     
     func toggleBookmarksFilter() {
         self.showBookmarks.toggle()
         self.runSearch()
+        resetSelected()
+        scrollToSelected()
     }
     
     func toggleBookmark(id: UUID?=nil) {
@@ -274,6 +284,7 @@ class YippyViewModel {
     
     func onSelectItem(at index: Int) {
         self.selected.accept(index)
+        self.selectedItem = yippyHistory.items[index]
         scrollToSelected()
     }
     
@@ -336,11 +347,13 @@ class YippyViewModel {
         guard let s = selected.value else {
             if yippyHistory.items.count > 0 {
                 selected.accept(0)
+                selectedItem = yippyHistory.items[0]
             }
             return
         }
         if s < yippyHistory.items.count - 1 {
             selected.accept(s + 1)
+            selectedItem = yippyHistory.items[s + 1]
         }
     }
     
@@ -348,11 +361,13 @@ class YippyViewModel {
         guard let s = selected.value else {
             if yippyHistory.items.count > 0 {
                 selected.accept(0)
+                selectedItem = yippyHistory.items[0]
             }
             return
         }
         if s > 0 {
             selected.accept(s - 1)
+            selectedItem = yippyHistory.items[s - 1]
         }
     }
     
