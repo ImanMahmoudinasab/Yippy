@@ -183,6 +183,7 @@ class YippyViewModel {
     func onSearchBarValueChange() {
         runSearch()
         resetSelected()
+        scrollToSelected()
     }
     
     func updateSearchEngine(items: [HistoryItem]) {
