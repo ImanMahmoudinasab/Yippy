@@ -197,11 +197,11 @@ struct YippyHistoryTableView: View {
                 .contextMenu(
                     ContextMenu(menuItems: {
                         Button("Copy") {
-                            viewModel.paste(at: index)
+                            viewModel.pastByIndex(at: index)
                         }
                         
                         Button("Delete") {
-                            viewModel.delete(at: index)
+                            viewModel.delete(at: index, item: item)
                         }
                     })
                 )

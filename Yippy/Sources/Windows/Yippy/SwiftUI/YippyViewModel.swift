@@ -61,10 +61,9 @@ class YippyViewModel {
         .subscribe(onNext: onAllChange)
         .disposed(by: disposeBag)
         
-        // TODO: Fix hack to make onAllChange run initially
-        selected.accept(1)
-        resetSelected()
+        onAllChange(results.value, (0,0))
         
+        // Register shortcuts:
         YippyHotKeys.downArrow.onDown(goToNextItem)
         YippyHotKeys.downArrow.onLong(goToNextItem)
         YippyHotKeys.pageDown.onDown(goToNextItem)
@@ -84,18 +83,17 @@ class YippyViewModel {
         YippyHotKeys.cmdBackslash.onDown(focusSearchBar)
         YippyHotKeys.toggleBookmarksFilter.onDown(self.toggleBookmarksFilter)
         YippyHotKeys.toggleBookmark.onDown{self.toggleBookmark()}
-        
         // Paste hot keys
-        YippyHotKeys.cmd0.onDown { self.shortcutPressed(key: 0) }
-        YippyHotKeys.cmd1.onDown { self.shortcutPressed(key: 1) }
-        YippyHotKeys.cmd2.onDown { self.shortcutPressed(key: 2) }
-        YippyHotKeys.cmd3.onDown { self.shortcutPressed(key: 3) }
-        YippyHotKeys.cmd4.onDown { self.shortcutPressed(key: 4) }
-        YippyHotKeys.cmd5.onDown { self.shortcutPressed(key: 5) }
-        YippyHotKeys.cmd6.onDown { self.shortcutPressed(key: 6) }
-        YippyHotKeys.cmd7.onDown { self.shortcutPressed(key: 7) }
-        YippyHotKeys.cmd8.onDown { self.shortcutPressed(key: 8) }
-        YippyHotKeys.cmd9.onDown { self.shortcutPressed(key: 9) }
+        YippyHotKeys.cmd0.onDown { self.pastByIndex(at: 0) }
+        YippyHotKeys.cmd1.onDown { self.pastByIndex(at: 1) }
+        YippyHotKeys.cmd2.onDown { self.pastByIndex(at: 2) }
+        YippyHotKeys.cmd3.onDown { self.pastByIndex(at: 3) }
+        YippyHotKeys.cmd4.onDown { self.pastByIndex(at: 4) }
+        YippyHotKeys.cmd5.onDown { self.pastByIndex(at: 5) }
+        YippyHotKeys.cmd6.onDown { self.pastByIndex(at: 6) }
+        YippyHotKeys.cmd7.onDown { self.pastByIndex(at: 7) }
+        YippyHotKeys.cmd8.onDown { self.pastByIndex(at: 8) }
+        YippyHotKeys.cmd9.onDown { self.pastByIndex(at: 9) }
         
         bindHotKeyToYippyWindow(YippyHotKeys.downArrow, disposeBag: disposeBag)
         bindHotKeyToYippyWindow(YippyHotKeys.upArrow, disposeBag: disposeBag)
@@ -122,9 +120,9 @@ class YippyViewModel {
     }
     
     func resetSelected() {
-        if yippyHistory.items.count > 0 {
+        if self.results.value.items.count > 0 {
             selected.accept(0)
-            selectedItem = yippyHistory.items[0]
+            selectedItem = self.results.value.items[0]
         }
         else {
             selected.accept(nil)
@@ -137,37 +135,20 @@ class YippyViewModel {
     }
     
     func onHistoryChange(_ history: [HistoryItem], change: History.Change) {
-        updateSearchEngine(items: history)
-        scrollToSelected()
         switch change {
-        case .toggleBookmark:
-            if self.showBookmarks {
-                runSearch()
-                resetSelected()
-                return;
-            }
+        case .initial:
+            updateResults()
+            resetSelected()
             break;
-        case .move:
-            runSearch()
+        case .insert:
+            updateResults()
+            // TODO: why onAllChange doesn't get called automatically when results changes
+            onAllChange(results.value, (self.selected.value,self.selected.value))
             resetSelected()
-            return;
-        default: break;
-        }
-
-        if !searchBarValue.isEmpty {
-            runSearch()
-            resetSelected()
-        }
-        else {
-            results.accept(Results(items: history, isSearchResult: false))
-            switch change {
-            case .insert(let i):
-                if i == 0 {
-                    incrementSelected()
-                }
-                break;
-            default: break;
-            }
+            scrollToSelected()
+            break;
+        default:
+            break;
         }
     }
     
@@ -183,7 +164,7 @@ class YippyViewModel {
     }
     
     func onSearchBarValueChange() {
-        runSearch()
+        updateResults()
         resetSelected()
         scrollToSelected()
     }
@@ -237,37 +218,54 @@ class YippyViewModel {
     }
     
     func pasteSelected() {
-        if let selected = self.selected.value {
+        if let selected = self.selectedItem {
             paste(selected: selected)
             isSearchBarFocused = false
             searchBarValue = ""
             isSearchBarFocused = true
+            updateResults()
+            resetSelected()
+            scrollToSelected()
+        }
+    }
+    
+    func pastByIndex(at index: Int) {
+        if self.yippyHistory.items.count > index {
+            let item = self.yippyHistory.items[index]
+            paste(selected: item)
         }
     }
     
     func deleteSelected() {
-        if let selected = self.selected.value {
+        if let selected = self.selectedItem {
             self.selected.accept(yippyHistory.delete(selected: selected))
             if self.selected.value != nil {
                 self.selectedItem = yippyHistory.items[self.selected.value!]
             }
+            updateResults()
+            // TODO: why onAllChange doesn't get called automatically when results changes
+            onAllChange(results.value, (self.selected.value,self.selected.value))
         }
     }
     
-    func paste(at index: Int) {
-        paste(selected: index)
-    }
-    
-    func delete(at index: Int) {
-        self.selected.accept(yippyHistory.delete(selected: index))
-        if self.selected.value != nil {
-            self.selectedItem = yippyHistory.items[self.selected.value!]
+    func delete(at index: Int, item: HistoryItem) {
+        let newSelection = yippyHistory.delete(selected: item)
+        if(self.selected.value == index){
+            self.selected.accept(newSelection)
+            if self.selected.value != nil {
+                self.selectedItem = yippyHistory.items[self.selected.value!]
+            }
         }
+        updateResults()
+        // TODO: why onAllChange doesn't get called automatically when results changes
+        onAllChange(results.value, (self.selected.value,self.selected.value))
     }
     
     func toggleBookmarksFilter() {
-        self.showBookmarks.toggle()
-        self.runSearch()
+        showBookmarks.toggle()
+        updateResults()
+        // TODO: why onAllChange doesn't get called automatically when results changes
+        onAllChange(results.value, (self.selected.value,self.selected.value))
         resetSelected()
         scrollToSelected()
     }
@@ -275,11 +273,12 @@ class YippyViewModel {
     func toggleBookmark(id: UUID?=nil) {
         if id == nil && self.selectedItem != nil {
             yippyHistory.toggleBookmark(selected: self.selectedItem!.fsId)
-            return
-        }
-        if let id = id {
+        }else if let id = id {
             yippyHistory.toggleBookmark(selected: id)
         }
+        updateResults()
+        // TODO: why onAllChange doesn't get called automatically when results changes
+        onAllChange(results.value, (self.selected.value,self.selected.value))
     }
     
     func onSelectItem(at index: Int) {
@@ -293,10 +292,6 @@ class YippyViewModel {
         State.main.isHistoryPanelShown.accept(false)
         State.main.previewHistoryItem.accept(nil)
         resetSelected()
-    }
-    
-    func shortcutPressed(key: Int) {
-        paste(selected: key)
     }
     
     func togglePreview() {
@@ -318,16 +313,7 @@ class YippyViewModel {
     }
     
     func runSearch() {
-        if (self.searchBarValue.isEmpty) {
-            if self.showBookmarks {
-                self.results.accept(Results(items: State.main.history.items.filter({ HistoryItem in
-                    return HistoryItem.bookmarked
-                }), isSearchResult: false))
-            } else {
-                self.results.accept(Results(items: State.main.history.items, isSearchResult: false))
-            }
-            return
-        }
+        updateSearchEngine(items: State.main.history.items)
         self.results.accept(Results(items: State.main.history.items.filter({ HistoryItem in
             if self.showBookmarks {
                 if let urlString = HistoryItem.getPlainString() {
@@ -341,6 +327,24 @@ class YippyViewModel {
             }
             return false
         }), isSearchResult: true))
+    }
+    
+    func updateResults() {
+        if (self.searchBarValue.isEmpty) {
+            if self.showBookmarks {
+                self.results.accept(Results(items: State.main.history.items.filter({ HistoryItem in
+                    return HistoryItem.bookmarked
+                }), isSearchResult: false))
+            } else {
+                self.results.accept(Results(items: State.main.history.items, isSearchResult: false))
+            }
+            // TODO: why onAllChange doesn't get called automatically when results changes
+            onAllChange(results.value, (self.selected.value,self.selected.value))
+        }else{
+            runSearch()
+            // TODO: why onAllChange doesn't get called automatically when results changes
+            onAllChange(results.value, (self.selected.value,self.selected.value))
+        }
     }
     
     private func incrementSelected() {
@@ -371,7 +375,7 @@ class YippyViewModel {
         }
     }
     
-    private func paste(selected: Int) {
+    private func paste(selected: HistoryItem) {
         self.close()
         yippyHistory.paste(selected: selected)
     }
