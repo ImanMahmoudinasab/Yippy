@@ -142,8 +142,6 @@ class YippyViewModel {
             break;
         case .insert:
             updateResults()
-            // TODO: why onAllChange doesn't get called automatically when results changes
-            onAllChange(results.value, (self.selected.value,self.selected.value))
             resetSelected()
             scrollToSelected()
             break;
@@ -243,8 +241,6 @@ class YippyViewModel {
                 self.selectedItem = yippyHistory.items[self.selected.value!]
             }
             updateResults()
-            // TODO: why onAllChange doesn't get called automatically when results changes
-            onAllChange(results.value, (self.selected.value,self.selected.value))
         }
     }
     
@@ -257,15 +253,11 @@ class YippyViewModel {
             }
         }
         updateResults()
-        // TODO: why onAllChange doesn't get called automatically when results changes
-        onAllChange(results.value, (self.selected.value,self.selected.value))
     }
     
     func toggleBookmarksFilter() {
         showBookmarks.toggle()
         updateResults()
-        // TODO: why onAllChange doesn't get called automatically when results changes
-        onAllChange(results.value, (self.selected.value,self.selected.value))
         resetSelected()
         scrollToSelected()
     }
@@ -277,8 +269,6 @@ class YippyViewModel {
             yippyHistory.toggleBookmark(selected: id)
         }
         updateResults()
-        // TODO: why onAllChange doesn't get called automatically when results changes
-        onAllChange(results.value, (self.selected.value,self.selected.value))
     }
     
     func onSelectItem(at index: Int) {
