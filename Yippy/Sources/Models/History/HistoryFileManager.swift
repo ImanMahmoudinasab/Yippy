@@ -366,11 +366,17 @@ class HistoryFileManager {
         saveHistoryOrder(history: newHistory, completionHandler: completionHandler)
     }
     
-    func clearHistory(completionHandler handler: ((Bool) -> Void)? = nil) {
+    func clearHistory(bookmarkedItems: [HistoryItem], completionHandler handler: ((Bool) -> Void)? = nil) {
         dispatchQueue.async {
-            // Delete the old history
+            // Delete history items directories except bookmarked items
             do {
-                try self.fileManager.removeItem(at: Constants.urls.history)
+                try self.fileManager.contentsOfDirectory(atPath: Constants.urls.history.path).forEach { fileName in
+                    if let fileNameUUID = UUID(uuidString: fileName) {
+                        if !bookmarkedItems.contains(where: { $0.fsId.uuidString == fileName }) {
+                            try self.fileManager.removeItem(at: self.getUrl(forItemWithId: fileNameUUID))
+                        }
+                    }
+                }
             }
             catch {
                 let historyError = YippyError(code: 0, userInfo: [
@@ -382,22 +388,8 @@ class HistoryFileManager {
                 return
             }
             
-            // Create a new empty history
-            do {
-                try self.fileManager.createDirectory(at: Constants.urls.history, withIntermediateDirectories: true)
-            }
-            catch {
-                let historyError = YippyError(code: 0, userInfo: [
-                    NSLocalizedDescriptionKey: "Failed to create directory for new history due to error: \(error.localizedDescription)"
-                ])
-                historyError.log(with: self.errorLogger)
-                historyError.show(with: self.alerter)
-                self.callHander(handler, withVal: false)
-                return
-            }
-            
             // Save the new order
-            self.saveHistoryOrder(history: [], completionHandler: handler)
+            self.saveHistoryOrder(history: bookmarkedItems , completionHandler: handler)
         }
     }
     

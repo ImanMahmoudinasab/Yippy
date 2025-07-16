@@ -117,10 +117,16 @@ class History {
     }
     
     func clear() {
-        _items.forEach({$0.stopCaching()})
-        _items = []
+        _items.forEach({ item in
+            if item.bookmarked != false {
+                item.stopCaching()
+            }
+        })
+        _items = _items.filter({ item in
+            return item.bookmarked
+        })
         subscribers.forEach({$0(_items, Change.clear)})
-        historyFM.clearHistory()
+        historyFM.clearHistory(bookmarkedItems: _items)
     }
     
     func moveItem(at i: Int, to j: Int) {

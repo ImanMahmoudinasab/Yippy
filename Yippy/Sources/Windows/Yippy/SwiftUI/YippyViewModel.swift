@@ -145,6 +145,11 @@ class YippyViewModel {
             resetSelected()
             scrollToSelected()
             break;
+        case .clear:
+            updateResults()
+            resetSelected()
+            scrollToSelected()
+            break;
         default:
             break;
         }
