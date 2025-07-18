@@ -140,16 +140,18 @@ class YippyViewModel {
             updateResults()
             resetSelected()
             break;
-        case .insert:
+        case .insert, .clear:
             updateResults()
             resetSelected()
             scrollToSelected()
             break;
-        case .clear:
+        case .itemsReduced(let deletedItems):
             updateResults()
-            resetSelected()
-            scrollToSelected()
-            break;
+            let seletedItemIsDeleted = deletedItems.contains(where: { $0.fsId == selectedItem?.fsId })
+            if seletedItemIsDeleted {
+                resetSelected()
+                scrollToSelected()
+            }
         default:
             break;
         }

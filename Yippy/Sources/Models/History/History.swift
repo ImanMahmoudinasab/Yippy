@@ -55,7 +55,7 @@ class History {
         case delete(deletedItem: HistoryItem)
         case clear
         case move(from: Int, to: Int)
-        case itemLimitDecreased(deletedItems: [HistoryItem])
+        case itemsReduced(deletedItems: [HistoryItem])
     }
     
     typealias SubscribeHandler = ([HistoryItem], Change) -> Void
@@ -104,16 +104,18 @@ class History {
         historyFM.insertItem(newHistory: _items, at: i)
         
         if _items.count > _maxItems.value {
-            let deletedItem = _items[_items.count - 1]
-            deleteItem(at: _items.count - 1)
-            subscribers.forEach({$0(_items, Change.delete(deletedItem: deletedItem))})
+            let lastNonBookmarkedItem = _items.last(where: { !$0.bookmarked })!
+            let lastNonBookmarkedIndex = _items.firstIndex(of: lastNonBookmarkedItem)!
+            _items.remove(at: lastNonBookmarkedIndex)
+            historyFM.deleteItem(newHistory: _items, deleted: lastNonBookmarkedItem)
+            subscribers.forEach({$0(_items, Change.itemsReduced(deletedItems: [lastNonBookmarkedItem]))})
         }
     }
     
     func deleteItem(at i: Int) {
         let removed = _items.remove(at: i)
-        subscribers.forEach({$0(_items, Change.delete(deletedItem: removed))})
         historyFM.deleteItem(newHistory: _items, deleted: removed)
+        subscribers.forEach({$0(_items, Change.delete(deletedItem: removed))})
     }
     
     func clear() {
@@ -159,10 +161,10 @@ class History {
         guard _items.count > maxItems else {
             return;
         }
-        historyFM.reduce(oldHistory: _items, toSize: maxItems)
-        let deletedItems = Array(_items.suffix(_items.count - maxItems))
-        _items = Array(_items.prefix(maxItems))
-        subscribers.forEach({$0(_items, Change.itemLimitDecreased(deletedItems: deletedItems))})
+        historyFM.reduce(oldHistory: _items, toSize: maxItems) { sucess, newHistory, deletedItems in
+            self._items = newHistory
+            self.subscribers.forEach({$0(self._items, Change.itemsReduced(deletedItems: deletedItems))})
+        }
     }
 }
 

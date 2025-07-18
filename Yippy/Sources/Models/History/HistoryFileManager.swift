@@ -126,10 +126,8 @@ class HistoryFileManager {
     
     func saveHistoryOrder(history: [HistoryItem], completionHandler: ((Bool) -> Void)? = nil) {
         dispatchQueue.async {
-            let res = self.writeHistoryOrder(history: history)
-            if let c = completionHandler {
-                c(res)
-            }
+            let result = self.writeHistoryOrder(history: history)
+            self.callHander(completionHandler, withVal: result)
         }
     }
     
@@ -332,18 +330,29 @@ class HistoryFileManager {
         }
     }
     
-    func reduce(oldHistory: [HistoryItem], toSize size: Int, completionHandler handler: ((Bool) -> Void)? = nil) {
+    func reduce(oldHistory: [HistoryItem], toSize size: Int, completionHandler handler: ((Bool, [HistoryItem], [HistoryItem]) -> Void)? = nil) {
         if oldHistory.count <= size {
-            callHander(handler, withVal: true)
+            if let handler = handler {
+                handler(true, oldHistory, [])
+            }
             return
         }
         
         dispatchQueue.async {
-            let newHistory = Array(oldHistory.prefix(size))
-            
-            for item in oldHistory.suffix(from: size) {
+            var newHistory:[HistoryItem] = []
+            var deletedItems: [HistoryItem] = []
+            var extraItemsCount = oldHistory.count - size;
+            var i: Int = oldHistory.count - 1;
+            while extraItemsCount > 0 && i >= 0 {
+                let item = oldHistory[i]
+                if item.bookmarked {
+                    newHistory.insert(item, at: 0)
+                    i -= 1
+                    continue
+                }
                 do {
                     try self.fileManager.removeItem(at: self.getUrl(forItemWithId: item.fsId))
+                    deletedItems.append(item)
                 }
                 catch {
                     let historyError = YippyError(code: 0, userInfo: [
@@ -351,14 +360,23 @@ class HistoryFileManager {
                     ])
                     historyError.log(with: self.errorLogger)
                     historyError.show(with: self.alerter)
-                    self.callHander(handler, withVal: false)
+                    if let handler = handler {
+                        newHistory.insert(contentsOf: oldHistory.prefix(upTo: i+1), at: 0)
+                        handler(false, newHistory, deletedItems)
+                        return
+                    }
                 }
-                
                 item.stopCaching()
+                i -= 1
+                extraItemsCount -= 1
             }
-            
+            newHistory.insert(contentsOf: oldHistory.prefix(upTo: i+1), at: 0)
             // Update order
-            self.saveHistoryOrder(history: newHistory, completionHandler: handler)
+            self.saveHistoryOrder(history: newHistory, completionHandler: { success in
+                if let handler = handler {
+                    handler(success, newHistory, deletedItems)
+                }
+            })
         }
     }
     
