@@ -117,6 +117,8 @@ class YippyViewModel {
         bindHotKeyToYippyWindow(YippyHotKeys.cmd9, disposeBag: disposeBag)
         bindHotKeyToYippyWindow(YippyHotKeys.ctrlDelete, disposeBag: disposeBag)
         bindHotKeyToYippyWindow(YippyHotKeys.space, disposeBag: disposeBag)
+        bindHotKeyToYippyWindow(YippyHotKeys.toggleBookmarksFilter, disposeBag: disposeBag)
+        bindHotKeyToYippyWindow(YippyHotKeys.toggleBookmark, disposeBag: disposeBag)
     }
     
     func resetSelected() {
